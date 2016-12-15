@@ -1,21 +1,10 @@
 import numpy as np
 import scipy.linalg as sp_linalg
 import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
-
-# from scipy.stats import multivariate_normal
-# x, y = np.mgrid[-1:1:.01, -1:1:.01]
-# pos = np.empty(x.shape + (2,))
-# pos[:, :, 0] = x; pos[:, :, 1] = y
-# rv = multivariate_normal([0.5, -0.2], [[2.0, 0.3], [0.3, 0.5]])
-# plt.contourf(x, y, rv.pdf(pos))
-# plt.show()
 
 def main():
-    #warmUp()
+    warmUp()
     lab()
-
-
 
 def warmUp():
     data = np.loadtxt('./fisher.csv', delimiter=',')
@@ -61,9 +50,13 @@ def warmUp():
     S = S1 + S2
     #Solve the reduced eigenvalue problem.
     eigVals, eigVects = sp_linalg.eig(B, S, left=True, right=False)
-    #eigVals, eigVects = np.linalg.eig(np.dot(np.linalg.inv(S), B))
     w = eigVects[:, 0]
     w = w.reshape((w.size, 1))
+
+    print('Class 1 mean: ' + str(meanc1))
+    print('Class 2 mean: ' + str(meanc2))
+    print('Between class scatter matrix: ' + str(B))
+    print('Within class scatter matrix: ' + str(S))
 
     xList = []
     yList = []
@@ -94,11 +87,11 @@ def lab():
     '''
     #Perform SVD and get first singular vector.
     U, s, V = np.linalg.svd(X)
-    print('Singular vectors of A.')
     v1 = V[0, :]
     v1 = v1.reshape((v1.size, 1))
     pcaData = np.dot(v1.T, X.T).T
-
+    #Print first 10 projected data coordinates.
+    print(pcaData[:10])
 
     '''
     PART B
@@ -124,12 +117,13 @@ def lab():
     S = S1 + S2
     # Solve the reduced eigenvalue problem.
     eigVals, eigVects = sp_linalg.eig(B, S, left=True, right=False)
-    # eigVals, eigVects = np.linalg.eig(np.dot(np.linalg.inv(S), B))
     w = eigVects[:, 0]
     w = w.reshape((w.size, 1))
 
     #Project onto the LDA space.
     ldaData = np.dot(w.T, X.T).T
+    #Print first 10 projected data coordinates.
+    print(ldaData[:10])
 
     '''
     PART C
@@ -193,9 +187,6 @@ def lab():
     thresholdAccuracy = calculateAccuracy(data[:, -1], thresholdPredicted)
     print('LDA threshold classification accuracy: %.12f' % thresholdAccuracy)
 
-
-
-
 '''
 Calculate straight number of times that two class labels agreed.
 '''
@@ -210,26 +201,5 @@ def calculateAccuracy(yactual, ypredicted):
 	metrics["accuracy"] = metrics["accuracy"] / float(len(yactual))
 	return metrics["accuracy"]
 
-
-
 if __name__ == '__main__':
     main()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
